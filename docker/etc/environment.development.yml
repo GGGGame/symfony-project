@@ -1,0 +1,31 @@
+#######################################
+# Environment Configuration
+#  - feel free to edit -
+# -> for most changes you only have to
+#         docker-compose up -d
+#    to apply them
+#######################################
+
+#######################################
+# PHP Debugger (xdebug|blackfire|none)
+
+PHP_DEBUGGER=blackfire
+BLACKFIRE_SERVER_ID=c1adc2b9-229b-48e7-881a-a52271180f1f
+BLACKFIRE_SERVER_TOKEN=d888cf412904118f5de67cff1f9f98d30e9dbd677866b82080c8d02cae2e702b
+
+#######################################
+# Context environment
+
+# TYPO3
+TYPO3_CONTEXT=Development/Docker
+
+# Symfony
+SYMFONY_ENV=dev
+SYMFONY_DEBUG=0
+
+# CakePHP
+CAKE_ENV=dev
+
+# yii
+YII_ENVIRONMENT=Development
+

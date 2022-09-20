@@ -1,0 +1,31 @@
+FROM webdevops/php-apache-dev:8.1
+
+ENV PROVISION_CONTEXT "development"
+
+# SSH config
+# COPY git/config             /home/application/.ssh/config
+# COPY git/id_rsa             /home/application/.ssh/id_rsa
+# COPY git/id_rsa.pub         /home/application/.ssh/id_rsa.pub
+# RUN  chown -R application:application home/application/.ssh/
+# RUN  chmod -R 700 home/application/.ssh/
+
+# Deploy scripts/configurations
+COPY etc/             /opt/docker/etc/
+
+RUN ln -sf /opt/docker/etc/cron/crontab /etc/cron.d/docker-boilerplate \
+    && chmod 0644 /opt/docker/etc/cron/crontab \
+    && echo >> /opt/docker/etc/cron/crontab \
+    && ln -sf /opt/docker/etc/php/development.ini /opt/docker/etc/php/php.ini
+
+# install the PHP extensions we need, nano, pdf generator and mysql
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+    && curl -sL https://deb.nodesource.com/setup_11.x | bash - \
+    && apt-get update \
+    && apt-get -y install nano  default-mysql-client nodejs \
+    && apt-get install --no-install-recommends yarn
+
+RUN rm -rf /var/lib/apt/lists/*
+
+# Configure volume/workdir
+WORKDIR /app/
