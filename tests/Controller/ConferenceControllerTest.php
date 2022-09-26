@@ -6,14 +6,14 @@ use Symfony\Component\Panther\PantherTestCase;
 
 class ConferenceControllerTest extends PantherTestCase
 {
-    public function testSomething(): void
-    {
-        $client = static::createPantherClient(['external_base_uri' => $_SERVER['SYMFONY_PROJECT_DEFAULT_ROUTE_URL']]);
-        $crawler = $client->request('GET', '/');
+    // public function testSomething(): void
+    // {
+    //     $client = static::createPantherClient();
+    //     $crawler = $client->request('GET', '/');
 
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Give your feedback!');
-    }
+    //     $this->assertResponseIsSuccessful();
+    //     $this->assertSelectorTextContains('h2', 'Give your feedback!');
+    // }
 
     public function testCommentSubmission()
     {
