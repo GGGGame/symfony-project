@@ -63,6 +63,15 @@ class CommentRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
+    public function remove(Comment $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     public function add(Comment $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
