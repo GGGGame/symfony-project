@@ -21,7 +21,7 @@ class SpamCheckerTest extends TestCase
         $checker = new SpamChecker($client, 'abdce');
 
         $this->expectException(\RuntimeException::class);
-        $this->expectException('Unable to check for spam: invalid (Invalid key).');
+        $this->expectExceptionMessage('Unable to check for spam: invalid (Invalid key).');
         $checker->getSpamScore($comment, $context);
 
     }
