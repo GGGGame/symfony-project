@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Conference;
+use App\Events\MailerEvent;
 use App\Form\CommentFormType;
+use App\Listeners\MailerListener;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
 use App\SpamChecker;
@@ -16,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
@@ -70,16 +73,26 @@ class ConferenceController extends AbstractController
                 throw new \RuntimeException('Commento spam livello 2');
             }
 
-            $email = (new TemplatedEmail())
-                ->from('noreply@test.it')
-                ->to($form->get('email')->getData())
-                ->subject('Time for Symfony mailer!')
-                ->htmlTemplate('mailer/mailer.html.twig')
-                ->context([
-                    'username' => $form->get('author')->getData()
-                ]);
+            // $email = (new TemplatedEmail())
+            //     ->from('noreply@test.it')
+            //     ->to($form->get('email')->getData())
+            //     ->subject('Time for Symfony mailer!')
+            //     ->htmlTemplate('mailer/mailer.html.twig')
+            //     ->context([
+            //         'username' => $form->get('author')->getData()
+            //     ]);
 
-            $mailer->send($email);
+            // $mailer->send($email);
+
+            $emailDetails = [$form->get('email')->getData(),
+                             $form->get('author')->getData()];
+
+            $dispatcher = new EventDispatcher();
+
+            $event = new MailerEvent();
+            $listener = new MailerListener($mailer, $emailDetails);
+            $dispatcher->addListener(MailerEvent::NAME, [$listener, 'onEmailEvent']);
+            $dispatcher->dispatch($event, MailerEvent::NAME);
 
             $this->entityManager->flush();
 
