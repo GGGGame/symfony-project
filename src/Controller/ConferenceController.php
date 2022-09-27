@@ -13,6 +13,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
@@ -36,7 +39,7 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conference/{slug}', name: 'conference')]
-    public function show(Request $request, Conference $conference, CommentRepository $commentRepository, SpamChecker $spamChecker, string $photoDir): Response
+    public function show(Request $request, Conference $conference, CommentRepository $commentRepository, SpamChecker $spamChecker, string $photoDir, MailerInterface $mailer): Response
      {
 
         $comment = new Comment();
@@ -66,6 +69,17 @@ class ConferenceController extends AbstractController
             if (2 === $spamChecker->getSpamScore($comment, $context)) {
                 throw new \RuntimeException('Commento spam livello 2');
             }
+
+            $email = (new TemplatedEmail())
+                ->from('noreply@test.it')
+                ->to($form->get('email')->getData())
+                ->subject('Time for Symfony mailer!')
+                ->htmlTemplate('mailer/mailer.html.twig')
+                ->context([
+                    'username' => $form->get('author')->getData()
+                ]);
+
+            $mailer->send($email);
 
             $this->entityManager->flush();
 
