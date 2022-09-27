@@ -73,17 +73,6 @@ class ConferenceController extends AbstractController
                 throw new \RuntimeException('Commento spam livello 2');
             }
 
-            // $email = (new TemplatedEmail())
-            //     ->from('noreply@test.it')
-            //     ->to($form->get('email')->getData())
-            //     ->subject('Time for Symfony mailer!')
-            //     ->htmlTemplate('mailer/mailer.html.twig')
-            //     ->context([
-            //         'username' => $form->get('author')->getData()
-            //     ]);
-
-            // $mailer->send($email);
-
             $emailDetails = [$form->get('email')->getData(),
                              $form->get('author')->getData()];
 
