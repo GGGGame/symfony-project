@@ -73,13 +73,10 @@ class ConferenceController extends AbstractController
                 throw new \RuntimeException('Commento spam livello 2');
             }
 
-            $emailDetails = [$form->get('email')->getData(),
-                             $form->get('author')->getData()];
-
             $dispatcher = new EventDispatcher();
 
-            $event = new MailerEvent();
-            $listener = new MailerListener($mailer, $emailDetails);
+            $event = new MailerEvent($comment);
+            $listener = new MailerListener($mailer);
             $dispatcher->addListener(MailerEvent::NAME, [$listener, 'onEmailEvent']);
             $dispatcher->dispatch($event, MailerEvent::NAME);
 

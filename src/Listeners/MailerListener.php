@@ -9,12 +9,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 class MailerListener
 {
     private $mailer;
-    private $emailDetails;
     
-    public function __construct(MailerInterface $mailer, array $details)
+    public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
-        $this->emailDetails = $details;
     }
 
     public function onEmailEvent(Event $event)
@@ -22,11 +20,11 @@ class MailerListener
 
         $email = (new TemplatedEmail())
                 ->from('noreply@test.it')
-                ->to($this->emailDetails[0])
+                ->to($event->getComment()->getEmail())
                 ->subject('Time for Symfony mailer!')
                 ->htmlTemplate('mailer/mailer.html.twig')
                 ->context([
-                    'username' => $this->emailDetails[1]
+                    'username' => $event->getComment()->getAuthor()
                 ]);
 
         $this->mailer->send($email);
