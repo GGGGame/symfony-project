@@ -5,7 +5,7 @@ namespace App\Events;
 use App\Entity\Comment;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class MailerEvent extends Event
+class CommentEvent extends Event
 {
     const NAME = 'comment.mailer.event';
 

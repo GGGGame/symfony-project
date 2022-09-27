@@ -1,21 +1,29 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Subscribers;
 
+use App\Events\CommentEvent;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-class MailerListener
+class CommentSubscriber implements EventSubscriberInterface
 {
     private $mailer;
-    
+
     public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
     }
 
-    public function onEmailEvent(Event $event)
+    public static function getSubscribedEvents()
+    {
+        return [
+            CommentEvent::NAME => 'onEmailEvent',
+        ];
+    }
+
+    public function onEmailEvent(CommentEvent $event)
     {
 
         $email = (new TemplatedEmail())

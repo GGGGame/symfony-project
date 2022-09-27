@@ -4,9 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Conference;
-use App\Events\MailerEvent;
+use App\Events\CommentEvent;
 use App\Form\CommentFormType;
-use App\Listeners\MailerListener;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
 use App\SpamChecker;
@@ -15,10 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
@@ -42,7 +38,7 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conference/{slug}', name: 'conference')]
-    public function show(Request $request, Conference $conference, CommentRepository $commentRepository, SpamChecker $spamChecker, string $photoDir, MailerInterface $mailer): Response
+    public function show(Request $request, Conference $conference, CommentRepository $commentRepository, SpamChecker $spamChecker, string $photoDir, EventDispatcherInterface $dispatcher): Response
      {
 
         $comment = new Comment();
@@ -73,12 +69,12 @@ class ConferenceController extends AbstractController
                 throw new \RuntimeException('Commento spam livello 2');
             }
 
-            $dispatcher = new EventDispatcher();
+            // $dispatcher = new EventDispatcher();
 
-            $event = new MailerEvent($comment);
-            $listener = new MailerListener($mailer);
-            $dispatcher->addListener(MailerEvent::NAME, [$listener, 'onEmailEvent']);
-            $dispatcher->dispatch($event, MailerEvent::NAME);
+            $event = new CommentEvent($comment);
+            // $listener = new MailerListener($mailer);
+            // $dispatcher->addListener(MailerEvent::NAME, [$listener, 'onEmailEvent']);
+            $dispatcher->dispatch($event, CommentEvent::NAME);
 
             $this->entityManager->flush();
 
